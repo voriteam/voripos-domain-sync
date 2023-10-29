@@ -1,0 +1,17 @@
+version: "3.3"
+services:
+  litefs:
+    privileged: true
+    restart: always
+    image: us-docker.pkg.dev/vori-1bdf0/pos/domain-data:latest
+    build:
+      context: .
+    environment:
+      # NOTE (clintonb): This is a total hack since we are running in a scenario where we do not have a true primary.
+      #   The generator job will take over as primary and write data. There is zero expectation of data being written
+      #   from this Docker container, and any writes will be overwritten by the generator.
+      IS_PRIMARY: true
+      LITEFS_CLOUD_TOKEN: ${LITEFS_CLOUD_TOKEN}
+      DOMAIN_DB_NAME: Domain.sqlite3
+    volumes:
+      - ${VORIPOS_DATA_DIR}:/host-data

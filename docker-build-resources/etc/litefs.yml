@@ -1,0 +1,22 @@
+# This directory is where your application will access the database.
+fuse:
+  dir: "${LITEFS_DB_DIRECTORY}"
+
+# This directory is where LiteFS will store internal data.
+# You must place this directory on a persistent volume.
+data:
+  dir: "${LITEFS_INTERNAL_DATA_DIRECTORY}"
+
+lease:
+  type: "static"
+
+  # Required. The URL for the primary node's LiteFS API.
+  # Note: replace `primary` with the appropriate hostname for your primary node!
+  advertise-url: "http://litefs:20202"
+
+  # Specifies whether the node can become the primary. If using
+  # "static" leasing, this should be set to true on the primary
+  # and false on the replicas.
+  candidate: $IS_PRIMARY
+
+exec: "sh sync.sh"
