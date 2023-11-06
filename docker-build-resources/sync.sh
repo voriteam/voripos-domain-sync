@@ -4,7 +4,7 @@ set -e
 set +v
 set +x
 
-Color_Off='\033[0m'       # Text Reset
+Normal='\033[0m'       # Text Reset
 
 # Regular Colors
 Red='\033[0;31m'          # Red
@@ -27,16 +27,16 @@ sync_database() {
 
   if test -f $path; then
     sourcePath="$LITEFS_DB_DIRECTORY/$name"
-    destPath="/host-data/$name"
+    destPath="/host-data/$(date +"%s")-$name"
 
     stat "$sourcePath"
 
     if test -s $sourcePath; then
       # NOTE: We execute the restore in the container since it is more performant than restoring on a host volume.
-      echo -e "${Yellow}Copying+restoring $sourcePath to $destPath...${Color_Off}"
-      time sqlite3 $destPath ".restore $sourcePath"
+      echo -e "${Yellow}Copying $sourcePath to $destPath...${Normal}"
+      time cp $sourcePath $destPath
 
-      echo -e "${Green}Successfully synced ${name} to host$Color_Off"
+      echo -e "${Green}Successfully copied ${name} to ${destPath}$Normal"
       sqlite3 $destPath ".mode table" "SELECT * FROM metadata;"
       sqlite3 $destPath "SELECT COUNT(*) || ' departments' FROM departments;"
       sqlite3 $destPath "SELECT COUNT(*) || ' tax rates' FROM tax_rates;"
@@ -48,11 +48,17 @@ sync_database() {
       sqlite3 $destPath "SELECT COUNT(*) || ' offer conditions' FROM offer_conditions;"
       sqlite3 $destPath "SELECT COUNT(*) || ' product ranges' FROM product_ranges;"
       sqlite3 $destPath ".mode table" "ANALYZE; SELECT * FROM sqlite_stat1;"
+
+      echo -e "${Yellow}Deleting all but the latest ${FILE_RETENTION_COUNT} files from /host-data$Normal"
+      tailNum=$(( $FILE_RETENTION_COUNT + 1 ))
+      cd /host-data
+      # Source: https://stackoverflow.com/a/34862475/592820
+      ls -tp | grep -v '/$' | tail -n +${tailNum} | xargs -I {} rm -- {}
     else
-      echo -e "$Red$sourcePath has not been fully replicated from LiteFS Cloud$Color_Off"
+      echo -e "$Red$sourcePath has not been fully replicated from LiteFS Cloud$Normal"
     fi
   else
-    echo -e "$Red$path does not yet exist$Color_Off"
+    echo -e "$Red$path does not yet exist$Normal"
   fi
 }
 
@@ -64,6 +70,6 @@ sync_databases;
 
 # NOTE: We watch the internal data directory because the DB directory uses FUSE,
 # and cannot be easily monitored with fswatch.
-watched_path="$LITEFS_INTERNAL_DATA_DIRECTORY/dbs/$DOMAIN_DB_NAME"
+watched_path="$LITEFS_INTERNAL_DATA_DIRECTORY/dbs/$DOMAIN_DB_NAME/database"
 echo "Running fswatch for $watched_path"
 fswatch -or "$watched_path"  | while read f; do echo "Change detected in $f files" && sync_databases; done

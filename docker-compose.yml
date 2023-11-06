@@ -12,6 +12,11 @@ services:
       #   from this Docker container, and any writes will be overwritten by the generator.
       IS_PRIMARY: true
       LITEFS_CLOUD_TOKEN: ${LITEFS_CLOUD_TOKEN}
+      FILE_RETENTION_COUNT: ${FILE_RETENTION_COUNT}
       DOMAIN_DB_NAME: Domain.sqlite3
     volumes:
-      - ${VORIPOS_DATA_DIR}:/host-data
+      # Bind mounts help decrease data transfer latency. We no longer perform SQLite restores but,
+      # when we tested them with bind mounts, the bind mount dropped restore time from 4 minutes down to 20 seconds.
+      - type: bind
+        source: ${VORIPOS_DATA_DIR}
+        target: /host-data
