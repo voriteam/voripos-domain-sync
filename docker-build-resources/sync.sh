@@ -4,15 +4,21 @@ set -e
 set +v
 set +x
 
-Normal='\033[0m'       # Text Reset
+Normal='\033[0m'
+Underline='\033[4m'
 
 # Regular Colors
-Red='\033[0;31m'          # Red
-Green='\033[0;32m'        # Green
-Yellow='\033[0;33m'       # Yellow
+Red='\033[0;31m'
+Green='\033[0;32m'
+Yellow='\033[0;33m'
 
 
 echo "Started sync.sh"
+
+if [ -z "$LITEFS_CLOUD_TOKEN" ]
+then
+  echo -e "${Red}${Underline}The LITEFS_CLOUD_TOKEN environment variable is not set! Make sure it is present in user defaults, and Bash can access them.$Normal"
+fi
 
 # NOTE (clintonb): This is a hack, but it works!
 # I tried lsyncd + rsync, but the changes were never properly reflected on the

@@ -18,5 +18,6 @@ echo "Data will be replicated to $VORIPOS_DATA_DIR"
 echo "Current contents of $VORIPOS_DATA_DIR:"
 ls -al "$VORIPOS_DATA_DIR"
 
+docker compose -f $( dirname -- "$0"; )/docker-compose.yml pull
 docker compose -f $( dirname -- "$0"; )/docker-compose.yml down
 docker compose -f $( dirname -- "$0"; )/docker-compose.yml up
