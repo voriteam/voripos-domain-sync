@@ -1,0 +1,3 @@
+[submodule "docker-build-resources/opentelemetry-shell"]
+	path = docker-build-resources/opentelemetry-shell
+	url = https://github.com/voriteam/opentelemetry-shell.git

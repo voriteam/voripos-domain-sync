@@ -19,4 +19,4 @@ lease:
   # and false on the replicas.
   candidate: $IS_PRIMARY
 
-exec: "sh sync.sh"
+exec: "bash sync.sh"

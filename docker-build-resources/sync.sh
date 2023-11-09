@@ -4,6 +4,12 @@ set -e
 set +v
 set +x
 
+# OpenTelemetry setup
+export OTEL_EXPORTER_OTEL_ENDPOINT="http://host.docker.internal:4318"
+export OTEL_SH_LIB_PATH="opentelemetry-shell/library"
+service_version=$OTEL_SERVICE_VERSION
+. opentelemetry-shell/library/otel_traces.sh
+
 Normal='\033[0m'
 Underline='\033[4m'
 
@@ -40,7 +46,21 @@ sync_database() {
     if test -s $sourcePath; then
       # NOTE: We execute the restore in the container since it is more performant than restoring on a host volume.
       echo -e "${Yellow}Copying $sourcePath to $destPath...${Normal}"
-      time cp $sourcePath $destPath
+
+      # Create an Otel span
+      generatedAt=$(sqlite3 $sourcePath "SELECT generated_at FROM metadata;")
+      schemaVersion=$(sqlite3 $sourcePath "SELECT schema_version FROM metadata;")
+      local span_name="Copy domain data to host"
+      local custom_resource_attributes=(
+        "domain_data_generated_at:$generatedAt"
+        "domain_data_schema_version:$schemaVersion"
+      )
+      local linkedTraceId=$(sqlite3 $sourcePath "SELECT linked_trace_id FROM metadata;")
+      local linkedTraceState=$(sqlite3 $sourcePath "SELECT linked_trace_state FROM metadata;")
+      local linkedSpanId=$(sqlite3 $sourcePath "SELECT linked_span_id FROM metadata;")
+      echo "[Linked Span Data] linkedTraceId: $linkedTraceId, linkedTraceState: $linkedTraceState, linkedSpanId: $linkedSpanId"
+      local linked_span=("$linkedTraceId" "$linkedSpanId" "$linkedTraceState")
+      otel_trace_start_parent_span cp $sourcePath $destPath
 
       echo -e "${Green}Successfully copied ${name} to ${destPath}$Normal"
       sqlite3 $destPath ".mode table" "SELECT * FROM metadata;"

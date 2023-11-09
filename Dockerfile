@@ -26,6 +26,7 @@ ENV LITEFS_DB_DIRECTORY=/litefs
 ENV LITEFS_INTERNAL_DATA_DIRECTORY=/var/lib/litefs
 
 WORKDIR /
+COPY docker-build-resources/opentelemetry-shell /opentelemetry-shell
 COPY docker-build-resources/sync.sh /sync.sh
 
 ENTRYPOINT litefs mount

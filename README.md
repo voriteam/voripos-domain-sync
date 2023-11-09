@@ -58,5 +58,6 @@ docker buildx build --platform linux/amd64,linux/arm64 -t us-docker.pkg.dev/vori
 ```
 
 ### Homebrew
-The POS machines run a service installed via Homebrew. Create a release on GitHub, and follow the instructions at 
-https://github.com/voriteam/homebrew-voripos to update the tap with the latest version.
+1. Update `VORIPOS_DOMAIN_SYNC_VERSION`.
+2. Create a release on GitHub.
+3. Follow the instructions at https://github.com/voriteam/homebrew-voripos to update the tap with the latest version.

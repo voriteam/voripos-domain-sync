@@ -1,2 +1,4 @@
 *
-!docker-build-resources/
+!docker-build-resources/etc
+!docker-build-resources/opentelemetry-shell/library
+!docker-build-resources/sync.sh
