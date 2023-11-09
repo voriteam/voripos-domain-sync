@@ -16,7 +16,7 @@ This service is distributed via Homebrew.
 ```shell
 brew tap voriteam/voripos
 brew install voripos-domain-sync
-brew services start voripos-domain-sync.sh
+brew services start voripos-domain-sync
 ```
 
 ## Local development
