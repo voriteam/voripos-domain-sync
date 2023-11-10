@@ -14,6 +14,10 @@ services:
       LITEFS_CLOUD_TOKEN: ${LITEFS_CLOUD_TOKEN}
       FILE_RETENTION_COUNT: ${FILE_RETENTION_COUNT}
       DOMAIN_DB_NAME: Domain.sqlite3
+      OTEL_EXPORTER_OTEL_ENDPOINT: "http://host.docker.internal:4318"
+      OTEL_SERVICE_NAME: voripos-domain-sync
+      OTEL_SERVICE_VERSION: ${VORIPOS_DOMAIN_SYNC_VERSION}
+      OTEL_LOG_LEVEL: debug
     volumes:
       # Bind mounts help decrease data transfer latency. We no longer perform SQLite restores but,
       # when we tested them with bind mounts, the bind mount dropped restore time from 4 minutes down to 20 seconds.
