@@ -17,8 +17,8 @@ FROM alpine:latest
 COPY --from=fswatch /usr/local/bin/fswatch /usr/local/bin/fswatch
 COPY --from=fswatch /usr/local/lib/libfswatch.so* /usr/local/lib/
 
-# LiteFS setup
-RUN apk add --no-cache autoconf alpine-sdk bash fuse3 sqlite ca-certificates
+# LiteFS setup (jq is needed for opentelemetry-shell)
+RUN apk add --no-cache autoconf alpine-sdk bash fuse3 sqlite ca-certificates jq
 COPY --from=flyio/litefs:0.5 /usr/local/bin/litefs /usr/local/bin/litefs
 COPY docker-build-resources/etc/litefs.yml /etc/litefs.yml
 

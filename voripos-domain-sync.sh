@@ -10,7 +10,7 @@ set +x
 # otherwise, the script will fail. This is not an issue on POS machines where Docker authentication is not configured.
 export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
 
-export VORIPOS_DOMAIN_SYNC_VERSION=0.4.0
+export VORIPOS_DOMAIN_SYNC_VERSION=0.4.1
 
 # NOTE: Bash must be given Full Disk Access in order to read the user defaults.
 #   See https://www.kith.org/jed/2022/02/15/launchctl-scheduling-shell-scripts-on-macos-and-full-disk-access/.
