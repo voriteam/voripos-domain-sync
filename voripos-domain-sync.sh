@@ -4,8 +4,11 @@ set -e
 set +v
 set +x
 
-# This is needed to locate the Docker executable
-export PATH="/usr/local/bin:$PATH"
+# This is needed to locate the Docker executable in /usr/local/bin.
+# The Homebrew path is a workaround for local development where we use docker-credential-gcloud to push images.
+# Docker will attempt to authenticate despite the image being public. docker-credential-gcloud must be locatable;
+# otherwise, the script will fail. This is not an issue on POS machines where Docker authentication is not configured.
+export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
 
 export VORIPOS_DOMAIN_SYNC_VERSION=0.4.0
 
