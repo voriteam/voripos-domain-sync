@@ -27,6 +27,11 @@ if test -f "$path"; then
   sourcePath="$LITEFS_DB_DIRECTORY/$name"
   destPath="/host-data/$(date +"%s")-$name"
 
+  # Extract LiteFS position for observability
+  pos=$(cat "$LITEFS_DB_DIRECTORY/$name-pos")
+  txid=$(echo "$pos" | cut -d "/" -f 1)
+  checksum=$(echo "$pos" | cut -d "/" -f 2)
+
   stat "$sourcePath"
 
   if test -s "$sourcePath"; then
@@ -42,6 +47,8 @@ if test -f "$path"; then
     custom_resource_attributes=(
       "domain_data_generated_at:$generatedAt"
       "domain_data_schema_version:$schemaVersion"
+      "litefs_txid:$txid"
+      "litefs_checksum:$checksum"
     )
     linkedTraceId=$(sqlite3 "$sourcePath" "SELECT linked_trace_id FROM metadata;")
     linkedTraceState=$(sqlite3 "$sourcePath" "SELECT linked_trace_state FROM metadata;")
